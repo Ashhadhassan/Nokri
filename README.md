@@ -52,32 +52,37 @@ flowchart TD
 │   ├── evaluation/
 │   │   └── test_pairs_100.json       # Locked 100-pair benchmark dataset
 │   └── sample_resumes/               # 30 curated test PDFs across 15 categories
+├── backend/
+│   ├── src/
+│   │   ├── api/                      # FastAPI REST service & Pydantic schemas
+│   │   ├── matching/                 # Skill gap analysis & natural language explainer
+│   │   ├── nlp/                      # Sub-millisecond skill extractor & taxonomy
+│   │   ├── parser/                   # PDF, DOCX, and text resume parsers
+│   │   ├── ranking/                  # BaseJobRanker, TFIDF, FAISS, and LightGBM
+│   │   └── schema.py                 # Shared Pydantic data schemas
+│   ├── scripts/                      # Training, ingestion, and evaluation scripts
+│   ├── tests/                        # Pytest suite (8 unit & integration tests)
+│   ├── Dockerfile                    # Backend Dockerfile
+│   └── requirements.txt              # Backend dependencies
+├── frontend/
+│   ├── app.py                        # Streamlit Interactive Web Application
+│   ├── Dockerfile                    # Frontend Dockerfile
+│   └── requirements.txt              # Frontend dependencies
+├── data/
+│   ├── processed/
+│   │   ├── jobs_cleaned.parquet      # 50,000 clean, deduplicated job postings
+│   │   ├── resumes_clean.parquet     # 2,483 anonymized resumes (train/val/test)
+│   │   └── skills_taxonomy.json      # 108k mapped skills & synonyms
+│   ├── evaluation/
+│   │   └── test_pairs_100.json       # Locked 100-pair benchmark dataset
+│   └── sample_resumes/               # 30 curated test PDFs across 15 categories
 ├── models/
 │   ├── tfidf_ranker.pkl              # Fitted TF-IDF baseline model artifact
 │   ├── faiss_index.bin               # 50,000-vector FAISS IndexFlatIP
 │   ├── faiss_metadata.parquet        # Metadata for vector search
 │   └── lgbm_ranker.txt               # Trained LightGBM Re-Ranker booster
-├── src/
-│   ├── api/                          # FastAPI REST service & Pydantic v2 schemas
-│   ├── matching/                     # Skill gap analysis & natural language explainer
-│   ├── nlp/                          # Sub-millisecond skill extractor & taxonomy
-│   ├── parser/                       # PDF, DOCX, and text resume parsers
-│   ├── ranking/                      # BaseJobRanker, TFIDF, FAISS, and LightGBM
-│   ├── schema.py                     # Shared Pydantic data schemas
-│   └── ui/                           # Streamlit Web Application
-├── scripts/
-│   ├── build_taxonomy.py             # Compiles ESCO & O*NET taxonomy
-│   ├── clean_resumes.py              # Multi-threaded resume cleaner & PII scrubber
-│   ├── ingest_jobs.py                # Multi-threaded job streaming & filter
-│   ├── build_faiss_index.py          # Embeds jobs and builds FAISS index
-│   ├── train_ranker.py               # Trains LightGBM re-ranker
-│   ├── create_test_benchmark.py      # Builds locked 100-pair test set
-│   └── evaluate.py                   # Comparative benchmark evaluation
-├── tests/
-│   └── test_pipeline.py              # Pytest suite (8 unit & integration tests)
-├── Dockerfile                        # Multi-stage CPU-optimized image
 ├── docker-compose.yml                # Multi-container orchestration
-└── requirements.txt                  # Pinned dependencies
+└── requirements.txt                  # Consolidated dependencies
 ```
 
 ---
@@ -97,13 +102,13 @@ Evaluated across 20 query sessions (100 pairs) representing 10 diverse job categ
 
 ### 1. Run Automated Test Suite
 ```bash
-pytest -v tests/test_pipeline.py
+pytest -v backend/tests/test_pipeline.py
 ```
 *(All 8 tests pass)*
 
 ### 2. Launch the Interactive Web App (Streamlit)
 ```bash
-streamlit run src/ui/app.py
+streamlit run frontend/app.py
 ```
 Open [http://localhost:8501](http://localhost:8501) in your browser to:
 - Test 1-to-1 matching with visual skill pill badges.
@@ -112,7 +117,7 @@ Open [http://localhost:8501](http://localhost:8501) in your browser to:
 
 ### 3. Launch the FastAPI Backend
 ```bash
-uvicorn src.api.main:app --reload --port 8000
+uvicorn backend.src.api.main:app --reload --port 8000
 ```
 Explore the interactive Swagger API documentation at [http://localhost:8000/docs](http://localhost:8000/docs).
 

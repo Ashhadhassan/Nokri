@@ -12,13 +12,26 @@ import sys
 import streamlit as st
 import pandas as pd
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
-from src.parser.resume_parser import parse_resume_file, parse_resume_text
-from src.nlp.skill_extractor import extract_skills_from_text
-from src.matching.explainer import explain_match
-from src.ranking.tfidf_ranker import TFIDFJobRanker
-from src.ranking.faiss_retriever import FAISSDenseRetriever
-from src.ranking.lgbm_ranker import TwoStageLGBMRanker
+workspace_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+backend_root = os.path.join(workspace_root, "backend")
+for p in [workspace_root, backend_root]:
+    if p not in sys.path:
+        sys.path.insert(0, p)
+
+try:
+    from backend.src.parser.resume_parser import parse_resume_file, parse_resume_text
+    from backend.src.nlp.skill_extractor import extract_skills_from_text
+    from backend.src.matching.explainer import explain_match
+    from backend.src.ranking.tfidf_ranker import TFIDFJobRanker
+    from backend.src.ranking.faiss_retriever import FAISSDenseRetriever
+    from backend.src.ranking.lgbm_ranker import TwoStageLGBMRanker
+except ImportError:
+    from src.parser.resume_parser import parse_resume_file, parse_resume_text
+    from src.nlp.skill_extractor import extract_skills_from_text
+    from src.matching.explainer import explain_match
+    from src.ranking.tfidf_ranker import TFIDFJobRanker
+    from src.ranking.faiss_retriever import FAISSDenseRetriever
+    from src.ranking.lgbm_ranker import TwoStageLGBMRanker
 
 st.set_page_config(
     page_title="Resume-to-Job Matcher",

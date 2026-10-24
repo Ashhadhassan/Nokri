@@ -5,7 +5,10 @@ Truthful and strictly grounded in textual evidence.
 """
 
 from typing import List, Dict, Set, Any
-from src.schema import MatchResult
+try:
+    from src.schema import MatchResult
+except ImportError:
+    from backend.src.schema import MatchResult
 
 class SkillExplainer:
     def explain_match(

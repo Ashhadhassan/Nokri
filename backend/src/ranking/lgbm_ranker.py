@@ -11,13 +11,31 @@ import numpy as np
 import pandas as pd
 from typing import List, Dict, Any, Optional
 
-from src.ranking.base import BaseJobRanker
-from src.ranking.faiss_retriever import FAISSDenseRetriever
-from src.ranking.tfidf_ranker import TFIDFJobRanker
-from src.ranking.features import extract_pairwise_features
-from src.nlp.skill_extractor import extract_skills_from_text
+try:
+    from src.ranking.base import BaseJobRanker
+    from src.ranking.faiss_retriever import FAISSDenseRetriever
+    from src.ranking.tfidf_ranker import TFIDFJobRanker
+    from src.ranking.features import extract_pairwise_features
+    from src.nlp.skill_extractor import extract_skills_from_text
+except ImportError:
+    from backend.src.ranking.base import BaseJobRanker
+    from backend.src.ranking.faiss_retriever import FAISSDenseRetriever
+    from backend.src.ranking.tfidf_ranker import TFIDFJobRanker
+    from backend.src.ranking.features import extract_pairwise_features
+    from backend.src.nlp.skill_extractor import extract_skills_from_text
 
-LGBM_MODEL_PATH = "models/lgbm_ranker.txt"
+def get_default_lgbm_path():
+    candidates = [
+        os.path.join("models", "lgbm_ranker.txt"),
+        os.path.join(os.path.dirname(__file__), "..", "..", "..", "models", "lgbm_ranker.txt"),
+        os.path.join(os.path.dirname(__file__), "..", "..", "models", "lgbm_ranker.txt"),
+    ]
+    for c in candidates:
+        if os.path.exists(c):
+            return os.path.abspath(c)
+    return os.path.abspath(candidates[0])
+
+LGBM_MODEL_PATH = get_default_lgbm_path()
 
 class TwoStageLGBMRanker(BaseJobRanker):
     def __init__(

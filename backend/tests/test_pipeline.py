@@ -8,14 +8,32 @@ import os
 import pytest
 import numpy as np
 
-from src.schema import JobPosting, ParsedResume, MatchResult
-from src.nlp.skill_extractor import extract_skills_from_text
-from src.matching.explainer import explain_match
-from src.ranking.tfidf_ranker import TFIDFJobRanker
-from src.ranking.faiss_retriever import FAISSDenseRetriever
-from src.ranking.lgbm_ranker import TwoStageLGBMRanker
-from src.ranking.features import extract_pairwise_features
-from src.parser.resume_parser import parse_resume_text, parse_resume_file
+import sys
+
+backend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+workspace_dir = os.path.abspath(os.path.join(backend_dir, ".."))
+for p in [workspace_dir, backend_dir]:
+    if p not in sys.path:
+        sys.path.insert(0, p)
+
+try:
+    from src.schema import JobPosting, ParsedResume, MatchResult
+    from src.nlp.skill_extractor import extract_skills_from_text
+    from src.matching.explainer import explain_match
+    from src.ranking.tfidf_ranker import TFIDFJobRanker
+    from src.ranking.faiss_retriever import FAISSDenseRetriever
+    from src.ranking.lgbm_ranker import TwoStageLGBMRanker
+    from src.ranking.features import extract_pairwise_features
+    from src.parser.resume_parser import parse_resume_text, parse_resume_file
+except ImportError:
+    from backend.src.schema import JobPosting, ParsedResume, MatchResult
+    from backend.src.nlp.skill_extractor import extract_skills_from_text
+    from backend.src.matching.explainer import explain_match
+    from backend.src.ranking.tfidf_ranker import TFIDFJobRanker
+    from backend.src.ranking.faiss_retriever import FAISSDenseRetriever
+    from backend.src.ranking.lgbm_ranker import TwoStageLGBMRanker
+    from backend.src.ranking.features import extract_pairwise_features
+    from backend.src.parser.resume_parser import parse_resume_text, parse_resume_file
 
 def test_skill_extractor():
     text = "Full Stack Engineer with expertise in Python, JavaScript, Docker, and AWS."

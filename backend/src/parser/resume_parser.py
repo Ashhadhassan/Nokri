@@ -9,8 +9,12 @@ from typing import Dict, Any, List
 import pdfplumber
 import docx
 
-from src.nlp.skill_extractor import extract_skills_from_text
-from src.schema import ParsedResume
+try:
+    from src.nlp.skill_extractor import extract_skills_from_text
+    from src.schema import ParsedResume
+except ImportError:
+    from backend.src.nlp.skill_extractor import extract_skills_from_text
+    from backend.src.schema import ParsedResume
 
 def extract_text_from_pdf(file_path: str) -> str:
     """Extracts text from PDF using pdfplumber."""

@@ -12,10 +12,25 @@ from typing import List, Dict, Any, Optional
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-from src.ranking.base import BaseJobRanker
-from src.schema import JOB_ID_COL, JOB_TITLE_COL, JOB_DESC_COL, JOB_SKILLS_COL, JOB_COMPANY_COL, JOB_LOCATION_COL
+try:
+    from src.ranking.base import BaseJobRanker
+    from src.schema import JOB_ID_COL, JOB_TITLE_COL, JOB_DESC_COL, JOB_SKILLS_COL, JOB_COMPANY_COL, JOB_LOCATION_COL
+except ImportError:
+    from backend.src.ranking.base import BaseJobRanker
+    from backend.src.schema import JOB_ID_COL, JOB_TITLE_COL, JOB_DESC_COL, JOB_SKILLS_COL, JOB_COMPANY_COL, JOB_LOCATION_COL
 
-MODEL_ARTIFACT_PATH = "models/tfidf_ranker.pkl"
+def get_default_tfidf_path():
+    candidates = [
+        os.path.join("models", "tfidf_ranker.pkl"),
+        os.path.join(os.path.dirname(__file__), "..", "..", "..", "models", "tfidf_ranker.pkl"),
+        os.path.join(os.path.dirname(__file__), "..", "..", "models", "tfidf_ranker.pkl"),
+    ]
+    for c in candidates:
+        if os.path.exists(c):
+            return os.path.abspath(c)
+    return os.path.abspath(candidates[0])
+
+MODEL_ARTIFACT_PATH = get_default_tfidf_path()
 
 class TFIDFJobRanker(BaseJobRanker):
     def __init__(

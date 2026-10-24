@@ -11,18 +11,36 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
-from src.schema import MatchResult, RankedJobItem, ParsedResume
-from src.api.models import (
-    HealthResponse, ParseRequest, MatchRequest, RankRequest, RankResponse,
-    FeedbackRequest, FeedbackResponse
-)
-from src.ranking.tfidf_ranker import TFIDFJobRanker, MODEL_ARTIFACT_PATH
-from src.ranking.faiss_retriever import FAISSDenseRetriever
-from src.ranking.lgbm_ranker import TwoStageLGBMRanker
-from src.parser.resume_parser import parse_resume_text, parse_resume_file
-from src.nlp.skill_extractor import extract_skills_from_text
-from src.matching.explainer import explain_match
+backend_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+workspace_root = os.path.abspath(os.path.join(backend_root, ".."))
+for p in [backend_root, workspace_root]:
+    if p not in sys.path:
+        sys.path.insert(0, p)
+
+try:
+    from src.schema import MatchResult, RankedJobItem, ParsedResume
+    from src.api.models import (
+        HealthResponse, ParseRequest, MatchRequest, RankRequest, RankResponse,
+        FeedbackRequest, FeedbackResponse
+    )
+    from src.ranking.tfidf_ranker import TFIDFJobRanker, MODEL_ARTIFACT_PATH
+    from src.ranking.faiss_retriever import FAISSDenseRetriever
+    from src.ranking.lgbm_ranker import TwoStageLGBMRanker
+    from src.parser.resume_parser import parse_resume_text, parse_resume_file
+    from src.nlp.skill_extractor import extract_skills_from_text
+    from src.matching.explainer import explain_match
+except ImportError:
+    from backend.src.schema import MatchResult, RankedJobItem, ParsedResume
+    from backend.src.api.models import (
+        HealthResponse, ParseRequest, MatchRequest, RankRequest, RankResponse,
+        FeedbackRequest, FeedbackResponse
+    )
+    from backend.src.ranking.tfidf_ranker import TFIDFJobRanker, MODEL_ARTIFACT_PATH
+    from backend.src.ranking.faiss_retriever import FAISSDenseRetriever
+    from backend.src.ranking.lgbm_ranker import TwoStageLGBMRanker
+    from backend.src.parser.resume_parser import parse_resume_text, parse_resume_file
+    from backend.src.nlp.skill_extractor import extract_skills_from_text
+    from backend.src.matching.explainer import explain_match
 
 # Model registry
 rankers: Dict[str, Any] = {}

@@ -9,7 +9,18 @@ import json
 import re
 from typing import List, Set, Dict
 
-TAXONOMY_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "data", "processed", "skills_taxonomy.json")
+def get_default_taxonomy_path():
+    candidates = [
+        os.path.join("data", "processed", "skills_taxonomy.json"),
+        os.path.join(os.path.dirname(__file__), "..", "..", "..", "data", "processed", "skills_taxonomy.json"),
+        os.path.join(os.path.dirname(__file__), "..", "..", "data", "processed", "skills_taxonomy.json"),
+    ]
+    for c in candidates:
+        if os.path.exists(c):
+            return os.path.abspath(c)
+    return os.path.abspath(candidates[0])
+
+TAXONOMY_PATH = get_default_taxonomy_path()
 
 class SkillExtractor:
     _instance = None

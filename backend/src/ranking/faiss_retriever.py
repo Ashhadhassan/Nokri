@@ -11,11 +11,25 @@ from typing import List, Dict, Any, Optional
 import faiss
 from sentence_transformers import SentenceTransformer
 
-from src.ranking.base import BaseJobRanker
+try:
+    from src.ranking.base import BaseJobRanker
+except ImportError:
+    from backend.src.ranking.base import BaseJobRanker
+
+def get_default_path(filename):
+    candidates = [
+        os.path.join("models", filename),
+        os.path.join(os.path.dirname(__file__), "..", "..", "..", "models", filename),
+        os.path.join(os.path.dirname(__file__), "..", "..", "models", filename),
+    ]
+    for c in candidates:
+        if os.path.exists(c):
+            return os.path.abspath(c)
+    return os.path.abspath(candidates[0])
 
 MODEL_NAME = "all-MiniLM-L6-v2"
-INDEX_PATH = "models/faiss_index.bin"
-META_PATH = "models/faiss_metadata.parquet"
+INDEX_PATH = get_default_path("faiss_index.bin")
+META_PATH = get_default_path("faiss_metadata.parquet")
 
 class FAISSDenseRetriever(BaseJobRanker):
     def __init__(

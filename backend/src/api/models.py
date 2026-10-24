@@ -4,7 +4,10 @@ FastAPI Request and Response Models using Pydantic v2.
 
 from typing import List, Optional
 from pydantic import BaseModel, Field
-from src.schema import MatchResult, RankedJobItem, ParsedResume
+try:
+    from src.schema import MatchResult, RankedJobItem, ParsedResume
+except ImportError:
+    from backend.src.schema import MatchResult, RankedJobItem, ParsedResume
 
 class HealthResponse(BaseModel):
     status: str = "ok"
